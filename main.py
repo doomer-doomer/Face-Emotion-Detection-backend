@@ -4,12 +4,12 @@ from PIL import Image
 import numpy as np
 import cv2
 from flask_cors import CORS
-from tensorflow.keras.models import load_model
+import tensorflow as tf
 
 app = Flask(__name__)
 CORS(app)
 
-trained_model = load_model('BasicRAF-DB794.h5') 
+trained_model = tf.keras.models.load_model('BasicRAF-DB794.h5') 
 
 # Load your trained model here
 # For example:
