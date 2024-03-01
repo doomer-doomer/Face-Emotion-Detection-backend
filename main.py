@@ -26,31 +26,36 @@ def preprocess_image(image):
 @app.route('/img', methods=['POST'])
 def process_image():
     # Check if request contains file
-    if 'file' not in request.files:
-        return jsonify({'message': 'No file part'}), 400
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return jsonify({'message': 'No file part'}), 400
 
-    # Get the uploaded file
-    file = request.files['file']
+        # Get the uploaded file
+        file = request.files['file']
 
-    # Check if file is valid
-    if file.filename == '':
-        return jsonify({'message': 'No selected file'}), 400
+        # Check if file is valid
+        if file.filename == '':
+            return jsonify({'message': 'No selected file'}), 400
 
-    # Read image from file
-    img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_COLOR)
+        # Read image from file
+        img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_COLOR)
 
-    # Preprocess the image
-    input_image = preprocess_image(img)
+        # Preprocess the image
+        input_image = preprocess_image(img)
 
-    # Make predictions using the trained model
-    predictions = trained_model.predict(np.expand_dims(input_image, axis=0))
+        # Make predictions using the trained model
+        predictions = trained_model.predict(np.expand_dims(input_image, axis=0))
 
-    # Get the predicted class label
-    predicted_class = np.argmax(predictions)
-    label = ['Surprised', 'Fear', 'Disgusted', 'Happy', 'Sad', 'Angry', 'Neutral']
-    predicted_emotion = label[predicted_class]
+        # Get the predicted class label
+        predicted_class = np.argmax(predictions)
+        label = ['Surprised', 'Fear', 'Disgusted', 'Happy', 'Sad', 'Angry', 'Neutral']
+        predicted_emotion = label[predicted_class]
 
-    return jsonify({'message': 'Image processing successful', 'predicted_emotion': predicted_emotion}), 200
+        return jsonify({'message': 'Image processing successful', 'predicted_emotion': predicted_emotion}), 200
+    elif request.method == 'GET':
+        return jsonify({'message': 'This is a GET request for image processing'}), 200
+    else:
+        return jsonify({'message': 'Method not allowed'}), 405
 
 # Run the Flask app
 if __name__ == '__main__':
