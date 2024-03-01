@@ -48,35 +48,40 @@ def preprocess_image(image_path):
 def index():
     return jsonify({'message': 'Hello, World!'})
 
-@app.route('/img', methods=['POST'])
+@app.route('/img', methods=['GET','POST'])
 def process_image():
-    if 'file' not in request.files:
-        return jsonify({'message': 'No file part'}), 400
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'message': 'No selected file'}), 400
-    if file:
-        # Save the uploaded file temporarily
-        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        file.save(file_path)
-       
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return jsonify({'message': 'No file part'}), 400
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'message': 'No selected file'}), 400
+        if file:
+            # Save the uploaded file temporarily
+            file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+            file.save(file_path)
         
-        # Preprocess the image
-        input_image = preprocess_image(file_path)
-        
-        # Remove the temporary file
-        os.remove(file_path)
+            
+            # Preprocess the image
+            input_image = preprocess_image(file_path)
+            
+            # Remove the temporary file
+            os.remove(file_path)
 
-        # Make predictions
-        predictions = trained_model.predict(np.expand_dims(input_image, axis=0))
+            # Make predictions
+            predictions = trained_model.predict(np.expand_dims(input_image, axis=0))
 
-        # Get the predicted class label
-        predicted_class = np.argmax(predictions)
-        
-        label = ['Surprised', 'Fear', 'Disgusted', 'Happy', 'Sad', 'Angry', 'Neutral']
-        predicted_emotion = label[predicted_class]
+            # Get the predicted class label
+            predicted_class = np.argmax(predictions)
+            
+            label = ['Surprised', 'Fear', 'Disgusted', 'Happy', 'Sad', 'Angry', 'Neutral']
+            predicted_emotion = label[predicted_class]
 
-        return jsonify({'message': 'Image processing successful', 'predicted_emotion': predicted_emotion}), 200
+            return jsonify({'message': 'Image processing successful', 'predicted_emotion': predicted_emotion}), 200
+        else:
+            return jsonify({'message': 'Invalid file'}), 400
+    else:
+        return jsonify({'message': 'This is get request'}), 405
 
 if __name__ == '__main__':
     app.run(debug=True)
