@@ -5,7 +5,6 @@ import numpy as np
 import cv2
 from flask_cors import CORS
 from tensorflow.keras.models import load_model
-import io
 
 app = Flask(__name__)
 CORS(app)
