@@ -44,6 +44,10 @@ def preprocess_image(image_path):
 
     return resized_face
 
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({'message': 'Hello, World!'})
+
 @app.route('/img', methods=['POST'])
 def process_image():
     if 'file' not in request.files:
