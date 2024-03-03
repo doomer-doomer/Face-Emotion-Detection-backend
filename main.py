@@ -103,5 +103,3 @@ def process_image():
 
         return jsonify({'message': 'Preloaded image processing successful', 'predicted_emotion': predicted_emotion}), 200
 
-if __name__ == '__main__':
-    app.run(debug=True)
